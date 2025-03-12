@@ -1,0 +1,11 @@
+BootStrap: docker
+From: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
+
+%post
+   apt-get -y update
+   apt-get -y install libgeos++ libproj-dev libnetcdf-dev libhdf5-dev netcdf-bin libx11-6 libxext6
+
+   pip install jsonargparse[signatures] lightning matplotlib xarray dask plotly geopandas cartopy netCDF4 h5py wandb basicsr einops "numpy<2.0" diffusers timm
+   
+%labels
+   Author SimonH

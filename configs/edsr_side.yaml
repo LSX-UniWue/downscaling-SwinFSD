@@ -1,0 +1,131 @@
+# lightning.pytorch==2.2.1
+seed_everything: true
+
+data:
+  class_path: dataset_utils.LightningDataModules.EraDataModule
+  # class_path: dataset_utils.LightningDataModules.Era2CerraDataModule
+  init_args:
+    data_path:  /scratch/
+    #data_path:  data/
+    # data_path: /anvme/workspace/b214cb13-ecodata/downscaling/
+    downscaling_factor: 4
+    num_workers: 8
+    batch_size:  24
+    crop_size: 256
+    channel_names: [ 'u10', 'v10', 't2m', 'sp', 'msl', 't850', 'u1000', 'v1000', 'z1000', 'u850', 'v850', 'z850', 'u500', 'v500', 'z500', 't500', 'z50', 'r500', 'r850', 'tcwv']
+    local_testing: false
+    use_separate_dataset: true
+    constant_channels: true
+    train_years: [2010, 2018]
+    val_years: [2019, 2019]
+    test_years: [2020, 2021]
+    return_offset: true
+
+model:
+  class_path: models.edsr_sr.edsr.EDSR_sidechannel
+  init_args:   
+    learning_rate: 2e-4
+    in_chans: 20
+    out_chans: 20
+    n_feats: 200
+    num_sidechannels: 2
+    embed_dim_sidechannels: 20
+    loss_beta: 0.6
+
+
+  
+trainer:
+
+  logger:
+    class_path: WandbLogger
+    init_args:
+      name: "EDSR-era2cerra" #"sidechannel_cerra-swinFIR-lightweight-4x-2024-05-01"
+      project: "masterthesis"
+      entity: "shiemn"
+      log_model: "all"
+      group: "era2cerra"
+      job_type: "train"
+      tags: ['sidechannel', '4x', 'more_data', 'EDSR', 'u10/v10']
+
+  accelerator: 'auto' ##########
+  fast_dev_run: false
+  callbacks:  
+    # - class_path: utils.dwd_callback.DWDValidationCallback
+    #   init_args:
+    #     cdc_data_path: "/anvme/workspace/b214cb13-ecodata/downscaling/CDC"
+    #     start_date: "20200101"
+    #     end_date: "20210701"
+    - class_path: utils.isd_callback.ISDValidationCallback
+      init_args:
+        isd_data_path: "/anvme/workspace/b214cb13-ecodata/downscaling/ISD"
+        start_date: "20200101" 
+        end_date: "20210701"
+        
+  strategy: auto #'ddp'
+  devices: auto
+  num_nodes: 1
+  precision: 32
+  max_epochs: 30
+  min_epochs: null
+  max_steps: -1
+  min_steps: null
+  max_time: "00:23:00:00"
+  limit_train_batches: null
+  limit_val_batches: null
+  limit_test_batches: null
+  limit_predict_batches: null
+  overfit_batches: 0.0
+  val_check_interval: 1.0
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: null
+  log_every_n_steps: null
+  enable_checkpointing: null
+  enable_progress_bar: true
+  enable_model_summary: true
+  accumulate_grad_batches: 1
+  gradient_clip_val: null
+  gradient_clip_algorithm: null
+  deterministic: null
+  benchmark: null
+  inference_mode: true
+  use_distributed_sampler: true
+  profiler: null
+  detect_anomaly: false
+  barebones: false
+  plugins: null
+  sync_batchnorm: false
+  reload_dataloaders_every_n_epochs: 0
+  default_root_dir: null
+
+ 
+default_early_stopping:
+  monitor: val_loss
+  min_delta: 0.0
+  patience: 3
+  verbose: true
+  mode: min
+  strict: true
+  check_finite: true
+  stopping_threshold: null
+  divergence_threshold: null
+  check_on_train_epoch_end: null
+  log_rank_zero_only: false
+
+default_checkpoint:
+  dirpath: output/models
+  filename: era2cerra-sidechannel-edsr
+  monitor: val_loss
+  verbose: true
+  save_last: null
+  save_top_k: 1
+  save_weights_only: false
+  mode: min
+  auto_insert_metric_name: true
+  every_n_train_steps: null
+  train_time_interval: null
+  every_n_epochs: null
+  save_on_train_epoch_end: null
+  enable_version_counter: true
+
+
+
