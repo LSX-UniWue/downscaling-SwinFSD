@@ -4,7 +4,7 @@
 
 This repository contains the code for the research paper titled "Statistical Downscaling of Multiple Atmospheric Variables over Europe using Super-Resolution Transformer", which is currently under review. This study introduces a Super-Resolution Transformer for downscaling of multiple atmospheric variables.
 
-To obtain example preprocessed ERA5 and CERRA data, please head to our [Zenodo-Project](https://doi.org/10.5281/zenodo.15012510).
+To obtain example preprocessed ERA5 and CERRA data and model weights, please head to our [Zenodo-Project](https://doi.org/10.5281/zenodo.15012510).
 
 ## Demo
 
@@ -58,3 +58,19 @@ python train_cli.py test --config configs/example.yaml
 - **utils**: Contains custom callbacks for running customized evaluations.
 - **train_cli.py**: The main script for training models using PyTorch Lightning CLI.
 - **xai.py**: The main script for running XAI experiments.
+
+## Hyperparameter-Search
+
+To run a hyperparameter search, you can use tools like W&B Sweeps. Below is the search space used for our HP-Search:
+
+| Parameter                | Search Space                     | Selected Value |
+|--------------------------|-----------------------------------|----------------|
+| Model-Embedding-Dimension | [60, 90, 120, 180, **240**]     | **240**        |
+| Side-Embedding-Dimension  | [10, **20**, 30]                | **20**         |
+| Model-Depth              | [4, **5**, 6, 7, 8]             | **5**          |
+| Model-Layers             | [4, **5**, 6, 7, 8]             | **5**          |
+| Model-MLP-Ratio          | [1, **2**, 3, 4]                | **2**          |
+| Model-Window-Size        | [4, **8**, 16]                  | **8**          |
+| Model-Heads              | [3, **6**]                      | **6**          |
+| Loss-Beta                | (0.1-0.9)                       | **0.6**        |
+| Learning-Rate            | (1e-2-1e-4)                     | **1.5e-4**     |

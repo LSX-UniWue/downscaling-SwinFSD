@@ -1,0 +1,17 @@
+zenodo_data
+zenodo_data.tar.gz
+
+data/CDC/raw
+data/CDC/*.csv
+data/CERRA/preprocessed_separate
+data/ERA5/preprocessed_separate
+data/ISD/preprocessed
+
+
+wandb/
+
+__pycache__
+.*pyc
+
+.DS_Store
+.vscode

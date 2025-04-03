@@ -389,7 +389,7 @@ def read_stats(data_dir, len_on_error: int = 20) -> tuple[float, float]:
     """
     if "stats.pt" in os.listdir(data_dir):
         
-        stats = torch.load(os.path.join(data_dir, 'stats.pt'))
+        stats = torch.load(os.path.join(data_dir, 'stats.pt'), weights_only=False)
         variable_mean = stats['mean']
         variable_std = stats['std']
         min_val = stats['min']
@@ -420,7 +420,7 @@ def get_constant_data(data_dir):
         ValueError: If there is an error reading the constant data file, an error is raised.
     """
     if "const.pt" in os.listdir(data_dir):
-        const: torch.tensor = torch.load(os.path.join(data_dir, 'const.pt'))
+        const: torch.tensor = torch.load(os.path.join(data_dir, 'const.pt'), weights_only=False)
         print(f"Loaded constant data from file")
 
         const = (const - torch.mean(const, dim=(1,2), keepdim=True)) / torch.std(const, dim=(1,2), keepdim=True)
